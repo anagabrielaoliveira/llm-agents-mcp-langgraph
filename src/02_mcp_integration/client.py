@@ -27,17 +27,23 @@ class MCPClient:
             env=None
         )
 
-        stdio_transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
+        stdio_transport = await self.exit_stack.enter_async_context(
+            stdio_client(server_params)
+            )
+        
         self.stdio, self.write = stdio_transport
-        self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
+
+        self.session = await self.exit_stack.enter_async_context(
+            ClientSession(self.stdio, self.write)
+            )
 
         await self.session.initialize()
 
         #---------------------------------------------
-        # List available tools
-        response = await self.session.list_tools()
-        self.tools = response.tools
-        #print(f"Available tools: {self.tools}")
+        # # List available tools
+        # response = await self.session.list_tools()
+        # self.tools = response.tools
+        # #print(f"Available tools: {self.tools}")
         print("Connected to MCP server successfully.")
         #---------------------------------------------
 
@@ -54,12 +60,19 @@ class MCPClient:
         # Initiate call
         result = await self.session.call_tool(tool_name, tool_args)
         print(f"Tool result: {result.content[0].text}")
+        
+    async def get_tools(self):
+        response = await self.session.list_tools()
+        return response.tools
+    
+    async def close(self):
         await self.exit_stack.aclose()
 
 async def main():
     client = MCPClient()
     await client.connect_to_server(sys.argv[1]) # server.py"
     await client.call_tool()
+    await client.close()
 
 if __name__ == "__main__":
     import sys
