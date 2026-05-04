@@ -1,7 +1,6 @@
 import asyncio
 from typing import Optional
 from contextlib import AsyncExitStack
-
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
@@ -34,33 +33,33 @@ class MCPClient:
 
         await self.session.initialize()
 
+        #---------------------------------------------
         # List available tools
         response = await self.session.list_tools()
         self.tools = response.tools
-        print(f"Available tools: {self.tools}")
+        #print(f"Available tools: {self.tools}")
         print("Connected to MCP server successfully.")
+        #---------------------------------------------
 
-        await self.exit_stack.aclose()
+    async def call_tool(self):
+        tool_name = self.tools[0].name
+        print(f"Calling tool: {tool_name}")
+
+        tool_args = {
+                "num1": 3.14,
+                "num2": 1000,
+                "operator": "*"
+            }
         
-        # 2.4 Integrar seu mcp no agente criado
-        # async def call_tool(self):
-        #     messages = [
-        #         {
-        #             "role": "user",
-        #             "content": "Calculate 99999*3.14"
-        #         }
-        #     ]
-
-        #     response = await self.session.list_tools()
-        #     available_tools = [{
-        #         "name": tool.name,
-        #         "description": tool.description,
-        #         "input_schema": tool.inputSchema
-        #     } for tool in response.tools]
+        # Initiate call
+        result = await self.session.call_tool(tool_name, tool_args)
+        print(f"Tool result: {result.content[0].text}")
+        await self.exit_stack.aclose()
 
 async def main():
     client = MCPClient()
     await client.connect_to_server(sys.argv[1]) # server.py"
+    await client.call_tool()
 
 if __name__ == "__main__":
     import sys

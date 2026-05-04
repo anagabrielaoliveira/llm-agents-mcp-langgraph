@@ -13,12 +13,9 @@
     # 2.4 Integrar seu mcp no agente criado
 
 import sys
-from typing import Any
-import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 # 2.2 Criar seu próprio servidor MCP e listar as tools disponíveis
-
 # Initialize FastMCP Server
 mcp = FastMCP("test_server")
 
@@ -42,15 +39,15 @@ async def simple_calculator(num1: float, num2: float, operator: str) -> str:
 
     # Perform the calculation based on the operator
     if operator == "+":
-        return {num1 + num2}
+        return f"{num1 + num2}"
     elif operator == "-":
-        return {num1 - num2}
+        return f"{num1 - num2}"
     elif operator == "*":
-        return {num1 * num2}
+        return f"{num1 * num2}"
     elif operator == "/":
         if num2 == 0:
             return "Cannot divide by zero."
-        return {num1 / num2}
+        return f"{num1 / num2}"
     
     return "Unsupported operator."
 
@@ -61,6 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-#  
